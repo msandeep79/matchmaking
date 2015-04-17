@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method='POST' action=''>
+    {% csrf_token %}
+<div class='row'>
+    {{ user_picture_form.as_p  }}
+</div>
+
+<div class='row'>
+    <h1>Addresses</h1>
+    {{ formset_a.as_p  }}
+</div>
+
+<div class='row'>
+    <h1>Jobs</h1>
+    {{ formset_j.as_p  }}
+</div>
+<input class='btn btn-success' type='submit' value='Update'>
+</form>
+{% endblock %}
