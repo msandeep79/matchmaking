@@ -1,5 +1,6 @@
 # Create your views here.
-from django.shortcuts import render_to_response,RequestContext
+from django.contrib import messages
+from django.shortcuts import render_to_response,RequestContext,Http404, HttpResponseRedirect
 from django.contrib.auth.models import User
 from .forms import AddressForm, JobForm, UserPictureForm
 from .models import Address, Job, UserPicture
@@ -28,13 +29,15 @@ def single_user(request,username):
 def edit_profile(request):
     user = request.user
     userpicture1 = UserPicture.objects.get(user=user)
-    user_picture_form = UserPictureForm(request.POST or None, prefix='pic', instance=userpicture1)
+    user_picture_form = UserPictureForm(request.POST or None, request.FILES or None, prefix='pic', instance=userpicture1)
+    
     addresss = Address.objects.filter(user=user)
     AddressFormset = modelformset_factory(Address,form=AddressForm, extra =1 )
-    formset_a = AddressFormset(request.POST or None, queryset=addresss)
+    formset_a = AddressFormset(queryset=addresss)
+    
     jobs = Job.objects.filter(user=user)    
     JobFormset = modelformset_factory(Job,form=JobForm, extra =1 )
-    formset_j = JobFormset(request.POST or None, queryset=jobs)
+    formset_j = JobFormset(queryset=jobs)
      
     
     if  user_picture_form.is_valid():
@@ -44,23 +47,44 @@ def edit_profile(request):
     return render_to_response('profiles/edit_profile.html', locals(), context_instance=RequestContext(request))
 
 
-def edit_address(request):
-    user = request.user
-    addresss = Address.objects.filter(user=user)
-    AddressFormset = modelformset_factory(Address,form=AddressForm, extra =1 )
-    formset_a = AddressFormset(request.POST or None, queryset=addresss)
+def edit_locations(request):
+    if request.method == 'POST':
+        user = request.user
+        addresss = Address.objects.filter(user=user)
+        AddressFormset = modelformset_factory(Address,form=AddressForm, extra =1 )
+        formset_a = AddressFormset(request.POST or None, queryset=addresss)
+        
+        
+        if  formset_a.is_valid():
+            for form in formset_a:
+                new_form = form.save(commit=False)
+                new_form.user=request.user
+                new_form.save()
+            
+            messages.success(request,'Profile details updated.')
+        else:
+            messages.error(request,'Update failed ')
+        return HttpResponseRedirect('/edit/')
+    else:
+        raise Http404
     
-    
-    if  formset_a.is_valid():
-        pass
-    return render_to_response('profiles/edit_addresses.html', locals(), context_instance=RequestContext(request))
-
-def edit_job(request):
-    user = request.user
-    jobs = Job.objects.filter(user=user)    
-    JobFormset = modelformset_factory(Job,form=JobForm, extra =1 )
-    formset_j = JobFormset(request.POST or None, queryset=jobs)
-    
-    if  formset_j.is_valid():
-        pass      
-    return render_to_response('profiles/edit_jobs.html', locals(), context_instance=RequestContext(request))
+def edit_jobs(request):
+    if request.method == 'POST':
+        user = request.user
+        jobs = Job.objects.filter(user=user)
+        JobFormset = modelformset_factory(Job,form=JobForm, extra =1 )
+        formset_j = JobFormset(request.POST, queryset=jobs)
+        
+        
+        if  formset_j.is_valid():
+            for form in formset_j:
+                new_form = form.save(commit=False)
+                
+                new_form.save()
+            
+            messages.success(request,'Profile details updated.')
+        else:
+            messages.error(request,'Update failed ')
+        return HttpResponseRedirect('/edit/')
+    else:
+        raise Http404

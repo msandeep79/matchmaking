@@ -21,4 +21,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include(registration.backends.default.urls)),
     url(r'^edit/$', 'profiles.views.edit_profile', name='edit_profile'),
+    (r'^edit/jobs$', 'profiles.views.edit_jobs'),
+    (r'^edit/locations$', 'profiles.views.edit_locations'),
 )
