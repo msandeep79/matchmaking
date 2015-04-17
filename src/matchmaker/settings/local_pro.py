@@ -1,6 +1,12 @@
 # Django settings for matchmaker project.
 import os
 
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'sandeep@connectr.in'
+EMAIL_HOST_PASSWORD = 'Keshav078'
+EMAIL_USE_TLS = True
+
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -144,3 +150,6 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
+
+ACCOUNT_ACTIVATION_DAYS = 7
+LOGIN_REDIRECT_URL = '/'

@@ -2,6 +2,7 @@ from django.conf.urls import patterns, include, url
 from django.conf import settings
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
+import registration.backends.default.urls
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -18,4 +19,5 @@ urlpatterns = patterns('',
     url(r'^members/(?P<username>\w+)/$', 'profiles.views.single_user', name='members'),
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^accounts/', include(registration.backends.default.urls)),
 )
